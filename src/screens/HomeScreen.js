@@ -1,46 +1,64 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import reducedQuotes from '../../data/reduced_quotes.json'; // Correct path to the JSON file
+import { fetchQuotes } from '../../firebase/fetchQuotes'; // Import the fetch function
 import HeartButton from '../components/heartButton';
 
 const HomeScreen = () => {
   const { logout } = useContext(AuthContext);
+  const [quotes, setQuotes] = useState([]); // Store all quotes
   const [currentQuote, setCurrentQuote] = useState({
     quote: 'Loading...',
     author: '',
-    likes: 0, // Add a likes property to track likes
+    likes: 0,
   });
 
+  // Fetch quotes from Firestore on mount
+  useEffect(() => {
+    const loadQuotes = async () => {
+      try {
+        const fetchedQuotes = await fetchQuotes();
+        setQuotes(fetchedQuotes); // Save fetched quotes to state
+        pickRandomQuote(fetchedQuotes); // Pick the first random quote
+      } catch (error) {
+        console.error("Error loading quotes:", error);
+      }
+    };
+
+    loadQuotes();
+  }, []);
+
   // Function to pick a random quote
-  const pickRandomQuote = () => {
-    const randomIndex = Math.floor(Math.random() * reducedQuotes.length);
-    setCurrentQuote({
-      ...reducedQuotes[randomIndex],
-      likes: 0, // Reset likes for the new quote
-    });
+  const pickRandomQuote = (quotesList) => {
+    if (quotesList && quotesList.length > 0) {
+      const randomIndex = Math.floor(Math.random() * quotesList.length);
+      setCurrentQuote({
+        ...quotesList[randomIndex],
+        likes: 0, // Reset likes for the new quote
+      });
+    }
   };
 
-  // Set a random quote every 30 seconds
+  // Change quote every 30 seconds
   useEffect(() => {
-    pickRandomQuote(); // Pick the first random quote immediately
-    const interval = setInterval(pickRandomQuote, 30000); // Change quote every 30 seconds
+    if (quotes.length > 0) {
+      const interval = setInterval(() => pickRandomQuote(quotes), 10000);
 
-    return () => clearInterval(interval); // Cleanup on unmount
-  }, []);
+      return () => clearInterval(interval); // Cleanup on unmount
+    }
+  }, [quotes]);
 
   // Function to handle liking a quote
   const handleLike = () => {
     setCurrentQuote((prevQuote) => ({
       ...prevQuote,
-      likes: prevQuote.likes + 1, // Increment the likes count
+      likes: prevQuote.likes + 1, // Increment likes count
     }));
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Daily Quotes</Text>
+      <Text style={styles.title}>Your Daily Quote</Text>
       <Text style={styles.quote}>{currentQuote.quote}</Text>
       {currentQuote.author && (
         <Text style={styles.author}>- {currentQuote.author}</Text>
