@@ -6,3 +6,17 @@ The ".expo" folder is created when an Expo project is started using "expo start"
 > Should I commit the ".expo" folder?
 No, you should not share the ".expo" folder. It does not contain any information that is relevant for other developers working on the project, it is specific to your machine.
 Upon project creation, the ".expo" folder is already added to your ".gitignore" file.
+
+npm run ios
+
+make sure you have the latest version of nvm:
+`nvm install --lts`
+
+Run globally:
+npm install @react-native-community/cli --save-dev
+npm install -g expo-cli
+
+
+After downloading all the dependencies, run:
+npx expo start
+

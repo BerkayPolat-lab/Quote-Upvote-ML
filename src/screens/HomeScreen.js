@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { ScrollView, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import { fetchQuotes } from '../../firebase/fetchQuotes'; // Import the fetch function
 import HeartButton from '../components/heartButton';
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
   const { logout } = useContext(AuthContext);
   const [quotes, setQuotes] = useState([]); // Store all quotes
   const [currentQuote, setCurrentQuote] = useState({
@@ -56,8 +56,17 @@ const HomeScreen = () => {
     }));
   };
 
+  const handleLogOut = async () => {
+    try {
+      await logout;
+      navigation.replace("Login");
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={{flex:1, justifyContent: 'center', flexGrow: 1, padding: 20 }}>
       <Text style={styles.title}>Your Daily Quote</Text>
       <Text style={styles.quote}>{currentQuote.quote}</Text>
       {currentQuote.author && (
@@ -71,15 +80,14 @@ const HomeScreen = () => {
       <HeartButton onPress={handleLike} />
 
       {/* Logout Button */}
-      <TouchableOpacity style={styles.logoutButton} onPress={logout}>
-        <Text style={styles.logoutText}>Logout</Text>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogOut}>
+        <Text style={styles.logoutText}>Log out</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 20 },
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
   quote: { fontSize: 18, fontStyle: 'italic', marginBottom: 10, textAlign: 'center' },
   author: { fontSize: 16, fontStyle: 'italic', textAlign: 'center', color: 'gray' },
