@@ -14,9 +14,11 @@ make sure you have the latest version of nvm:
 
 Run globally:
 npm install @react-native-community/cli --save-dev
-npm install -g expo-cli
 
+npm install -g expo-cli
 
 After downloading all the dependencies, run:
 npx expo start
 
+run:
+flask --app flaskr run --debug
