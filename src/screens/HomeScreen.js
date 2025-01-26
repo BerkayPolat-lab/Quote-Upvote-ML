@@ -7,6 +7,7 @@ import HeartButton from '../components/heartButton';
 const HomeScreen = ({ navigation }) => {
   const { logout } = useContext(AuthContext);
   const [quotes, setQuotes] = useState([]); // Store all quotes
+  const [currentQuoteIndex, setCurrentQuoteIndex] = useState();
   const [currentQuote, setCurrentQuote] = useState({
     quote: 'Loading...',
     author: '',
@@ -28,14 +29,42 @@ const HomeScreen = ({ navigation }) => {
     loadQuotes();
   }, []);
 
+  
   // Function to pick a random quote
   const pickRandomQuote = (quotesList) => {
-    if (quotesList && quotesList.length > 0) {
-      const randomIndex = Math.floor(Math.random() * quotesList.length);
-      setCurrentQuote({
-        ...quotesList[randomIndex],
-        likes: 0, // Reset likes for the new quote
-      });
+    if (currentQuote.likes == 0) {
+      if (quotesList && quotesList.length > 0) {
+        const randomIndex = Math.floor(Math.random() * quotesList.length);
+        setCurrentQuoteIndex(randomIndex);
+        setCurrentQuote({
+          ...quotesList[randomIndex],
+          likes: 0, // Reset likes for the new quote
+        });
+      }
+    } else {
+      const fetchSimilarQuote = async () => {
+        try {
+          // Send the currentQuoteIndex to the backend
+          const response = await fetch("https://127.0.0.1:5000/similar-quote", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ likedQuoteIndex: currentQuoteIndex }),
+          });
+      
+          const similarQuote = await response.json();
+      
+          if (similarQuote) {
+            setCurrentQuote({
+              quote: similarQuote.quote,
+              author: similarQuote.author,
+              likes: 0, // Reset likes for the new similar quote
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching similar quote:", error);
+        }
+      }
+      fetchSimilarQuote();
     }
   };
 
