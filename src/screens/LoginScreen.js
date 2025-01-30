@@ -31,6 +31,9 @@ const LoginScreen = ({ navigation }) => {
           value={email}
           onChangeText={setEmail}
           style={styles.input}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoFocus = {true}
         />
         <Text style={styles.inputTitle}> Password </Text>
         <TextInput
@@ -38,6 +41,7 @@ const LoginScreen = ({ navigation }) => {
           onChangeText={setPassword}
           secureTextEntry
           style={styles.input}
+          autoCapitalize="none"
         />
         {error && <Text style={styles.error}>{error}</Text>}
         <Button title="Login" onPress={handleLogin} />
