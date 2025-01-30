@@ -3,9 +3,10 @@ import { ScrollView, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import { fetchQuotes } from '../../firebase/fetchQuotes'; // Import the fetch function
 import HeartButton from '../components/heartButton';
+import LikedQuotesPage from './LikedQuotesPage';
 
 const HomeScreen = ({ navigation }) => {
-  const { logout } = useContext(AuthContext);
+  const { logout, likedQuotes, setLikedQuotes } = useContext(AuthContext);
   const [quotes, setQuotes] = useState([]); // Store all quotes
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState();
   const [currentQuote, setCurrentQuote] = useState({
@@ -79,10 +80,19 @@ const HomeScreen = ({ navigation }) => {
 
   // Function to handle liking a quote
   const handleLike = () => {
-    setCurrentQuote((prevQuote) => ({
-      ...prevQuote,
-      likes: prevQuote.likes + 1, // Increment likes count
-    }));
+    if (currentQuote.likes === 0) {
+      setCurrentQuote((prevQuote) => ({
+        ...prevQuote,
+        likes: prevQuote.likes + 1, // Increment likes count
+      }));
+      setLikedQuotes([...likedQuotes, currentQuote]);
+    } else if (currentQuote.likes === 1) {
+      setCurrentQuote((prevQuote) => ({
+        ...prevQuote,
+        likes: 1, 
+      }));
+
+    }
   };
 
   const handleLogOut = async () => {
@@ -94,8 +104,19 @@ const HomeScreen = ({ navigation }) => {
     }
   }
 
+  const handleLikedQuotesPage = () => {
+    try {
+      navigation.replace("LikedQuotesPage"); 
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
   return (
     <ScrollView contentContainerStyle={{flex:1, justifyContent: 'center', flexGrow: 1, padding: 20 }}>
+      <TouchableOpacity style={styles.likedQuotesButton} onPress={handleLikedQuotesPage}>
+        <Text style={styles.likedQuotes}>Liked Quotes</Text>
+      </TouchableOpacity>
       <Text style={styles.title}>Your Daily Quote</Text>
       <Text style={styles.quote}>{currentQuote.quote}</Text>
       {currentQuote.author && (
@@ -117,6 +138,20 @@ const HomeScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  likedQuotesButton: {
+    backgroundColor: '#FF5733',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 20,
+    length: 100,
+  },
+  likedQuotesText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  likedQuotes: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', marginVertical: 50 },
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
   quote: { fontSize: 18, fontStyle: 'italic', marginBottom: 10, textAlign: 'center' },
   author: { fontSize: 16, fontStyle: 'italic', textAlign: 'center', color: 'gray' },

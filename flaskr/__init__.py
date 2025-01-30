@@ -5,7 +5,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import pickle
 import numpy as np
-#from quote_upvote.models import Quote
 
 app = Flask(__name__)
 
