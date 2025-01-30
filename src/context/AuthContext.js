@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
-import authService from '../services/AuthService';
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
+import { auth } from "../config/fireBaseConfig"; // Ensure this uses `initializeAuth`
 
 export const AuthContext = createContext();
 
@@ -8,22 +9,31 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const checkUser = async () => {
-            const currentUser = await authService.getCurrentUser();
+        // ✅ Listen for auth state changes (ensures persistence)
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser);
             setLoading(false);
-        };
-        checkUser();
+        });
+
+        return () => unsubscribe(); // Cleanup listener on unmount
     }, []);
 
     const login = async (email, password) => {
-        const loggedInUser = await authService.login(email, password);
-        setUser(loggedInUser);
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            setUser(userCredential.user);
+        } catch (error) {
+            console.error("Login error:", error);
+        }
     };
 
     const logout = async () => {
-        await authService.logout();
-        setUser(null);
+        try {
+            await signOut(auth);
+            setUser(null);
+        } catch (error) {
+            console.error("Logout error:", error);
+        }
     };
 
     return (

@@ -1,12 +1,15 @@
-// Import the functions you need from the SDKs you need
+// Import Firebase SDKs
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { 
+    getAuth, 
+    initializeAuth, 
+    getReactNativePersistence, 
+    createUserWithEmailAndPassword 
+} from "firebase/auth";
+import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCmBTO36KgjvwznCn46U__-0u7pLkQOdHA",
   authDomain: "quotes-3afcb.firebaseapp.com",
@@ -19,14 +22,21 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-export const auth = getAuth(app);
 
+// ✅ Enable persistent authentication using AsyncStorage
+const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+});
+
+// Export auth instance
+export { auth };
+
+// Function to register a user
 export const registerUser = async (email, password) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      return userCredential.user; // Returns the user object
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        return userCredential.user; // Returns the user object
     } catch (error) {
-      throw error; // Propagate error to the caller
+        throw error; // Propagate error to the caller
     }
-  };
+};
