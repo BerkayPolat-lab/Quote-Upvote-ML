@@ -7,6 +7,7 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [likedQuotes, setLikedQuotes] = useState([]);
 
     useEffect(() => {
         // ✅ Listen for auth state changes (ensures persistence)
@@ -37,7 +38,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, logout, loading, likedQuotes, setLikedQuotes }}>
             {children}
         </AuthContext.Provider>
     );
