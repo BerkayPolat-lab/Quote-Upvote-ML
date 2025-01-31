@@ -1,6 +1,7 @@
 // Import Firebase SDKs
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+import { getFirestore } from "firebase/firestore";
 import { 
     getAuth, 
     initializeAuth, 
@@ -22,6 +23,10 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+
+export { db };
 
 // ✅ Enable persistent authentication using AsyncStorage
 const auth = initializeAuth(app, {

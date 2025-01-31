@@ -3,10 +3,12 @@ import { ScrollView, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import { fetchQuotes } from '../../firebase/fetchQuotes'; // Import the fetch function
 import HeartButton from '../components/heartButton';
-import LikedQuotesPage from './LikedQuotesPage';
+import {collection, addDoc, Timestamp} from "firebase/firestore";
+import { db } from '../config/fireBaseConfig';
+
 
 const HomeScreen = ({ navigation }) => {
-  const { logout, likedQuotes, setLikedQuotes } = useContext(AuthContext);
+  const { logout, user, likedQuotes, setLikedQuotes } = useContext(AuthContext);
   const [quotes, setQuotes] = useState([]); // Store all quotes
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState();
   const [currentQuote, setCurrentQuote] = useState({
@@ -79,19 +81,30 @@ const HomeScreen = ({ navigation }) => {
   }, [quotes]);
 
   // Function to handle liking a quote
-  const handleLike = () => {
+  const handleLike = async () => {
+    if (currentQuote.likes === 1) {
+      setCurrentQuote((prevQuote) => ({
+        ...prevQuote,
+        likes: 1, 
+      }));
+    }
+    
     if (currentQuote.likes === 0) {
       setCurrentQuote((prevQuote) => ({
         ...prevQuote,
         likes: prevQuote.likes + 1, // Increment likes count
       }));
       setLikedQuotes([...likedQuotes, currentQuote]);
-    } else if (currentQuote.likes === 1) {
-      setCurrentQuote((prevQuote) => ({
-        ...prevQuote,
-        likes: 1, 
-      }));
 
+      try {
+        await addDoc(collection(db, "liked-quotes"), {
+          ...currentQuote,
+          userId: user.uid,
+          Timestamp: Timestamp.now(),
+        });
+      } catch (err) {
+        setError(err.message);
+      }
     }
   };
 
@@ -113,10 +126,12 @@ const HomeScreen = ({ navigation }) => {
   }
 
   return (
-    <ScrollView contentContainerStyle={{flex:1, justifyContent: 'center', flexGrow: 1, padding: 20 }}>
+    <ScrollView contentContainerStyle={{flex:1, justifyContent: 'center', flexGrow: 1, padding: 20, backgroundColor: '#fff' }}>
+      {/* Liked Quotes Button */}
       <TouchableOpacity style={styles.likedQuotesButton} onPress={handleLikedQuotesPage}>
-        <Text style={styles.likedQuotes}>Liked Quotes</Text>
+        <Text style={styles.likedQuotesText}>Liked Quotes</Text>
       </TouchableOpacity>
+      {/* Liked Quotes Button */}
       <Text style={styles.title}>Your Daily Quote</Text>
       <Text style={styles.quote}>{currentQuote.quote}</Text>
       {currentQuote.author && (
@@ -139,25 +154,29 @@ const HomeScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   likedQuotesButton: {
-    backgroundColor: '#FF5733',
+    position: 'absolute', // Absolute positioning
+    top: 10,             // Distance from the top
+    right: 10,       // Distance from the right
+    backgroundColor: '#cdc7c5',
     padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginTop: 20,
+    fontWeight: 'bold',
+    backgroundColor: 'transparent',
+    padding: 5,
     length: 100,
+    width: 120,
+    textAlign: 'center',
   },
   likedQuotesText: {
-    color: '#FFF',
+    color: '#ff0000', 
     fontSize: 16,
     fontWeight: 'bold',
   },
-  likedQuotes: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', marginVertical: 50 },
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
   quote: { fontSize: 18, fontStyle: 'italic', marginBottom: 10, textAlign: 'center' },
   author: { fontSize: 16, fontStyle: 'italic', textAlign: 'center', color: 'gray' },
   likes: { fontSize: 16, fontWeight: 'bold', textAlign: 'center', marginVertical: 10 },
   logoutButton: {
-    backgroundColor: '#FF5733',
+    backgroundColor: '#007AFF',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',

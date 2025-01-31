@@ -19,6 +19,7 @@ export const AuthProvider = ({ children }) => {
         return () => unsubscribe(); // Cleanup listener on unmount
     }, []);
 
+
     const login = async (email, password) => {
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
