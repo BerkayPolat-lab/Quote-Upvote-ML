@@ -19,13 +19,14 @@ export const AuthProvider = ({ children }) => {
         return () => unsubscribe(); // Cleanup listener on unmount
     }, []);
 
-
     const login = async (email, password) => {
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             setUser(userCredential.user);
+            return userCredential.user; // ✅ Return user to check in LoginScreen.js
         } catch (error) {
             console.error("Login error:", error);
+            throw error; // ✅ Ensure error is thrown so it can be caught in LoginScreen.js
         }
     };
 

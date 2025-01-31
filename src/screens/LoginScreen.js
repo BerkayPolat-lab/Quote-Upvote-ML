@@ -15,14 +15,22 @@ const LoginScreen = ({ navigation }) => {
   const [error, setError] = useState(null);
 
   const handleLogin = async () => {
+    if (!email.trim() || !password.trim()) {
+      setError("Email and password are required.");
+      return;
+    }
+  
     try {
-      await login(email, password);
-      navigation.replace("Home"); // Navigate to the main app after login
+      const user = await login(email, password);
+      if (user) {
+        navigation.replace("Home");
+      }
     } catch (err) {
-      setError(err.message);
+      setError("Invalid username/password"); // ✅ Display Firebase authentication error
     }
   };
-
+  
+  
   return (
       <SafeAreaView style={styles.container}>
         <Text style={styles.title}>Login</Text>
