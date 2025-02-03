@@ -8,10 +8,10 @@ import numpy as np
 
 app = Flask(__name__)
 
-with open("./quote_upvote/quotes.pkl", "rb") as f:
+with open("../quote_upvote/quotes.pkl", "rb") as f:
     quotes = pickle.load(f)
 
-with open("./quote_upvote/similarity_matrix.pkl", "rb") as f:
+with open("../quote_upvote/similarity_matrix.pkl", "rb") as f:
     similarity_matrix = pickle.load(f)
 
 def recommend_similar_quote(liked_quote_index):
@@ -27,18 +27,19 @@ def recommend_similar_quote(liked_quote_index):
 
 @app.route('/similar-quote', methods=['POST'])
 def similar_quote():
-    data = request.json
+    if not request.is_json:
+        return jsonify({"error": "Invalid Content-Type. Expected application/json."}), 415
+    data = request.get_json()
     liked_quote_index = data.get("likedQuoteIndex")
+    print(liked_quote_index)
     
-    # Validate the index (if needed)
     if liked_quote_index is None:
         return jsonify({"error": "likedQuoteIndex is required"}), 400
 
     recommended_quote = recommend_similar_quote(liked_quote_index)
-    # Use the result.pkl data to fetch the recommended quote and its author
-    # Assuming the result.pkl contains a structure like:
-    # {"quote": "Recommended Quote", "author": "Recommended Author"}
+    print(jsonify(recommended_quote))
     return jsonify(recommended_quote)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

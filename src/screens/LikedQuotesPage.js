@@ -52,6 +52,7 @@ const LikedQuotesPage = ({ navigation }) => {
                 <Text style={styles.HomeButtonText}>Home</Text>
             </TouchableOpacity>
             <View style={{ height: 20 }} />
+            <Text style={styles.title}>Liked Quotes</Text>
 
             {loading ? (
                 <ActivityIndicator size="large" color="#007AFF" />

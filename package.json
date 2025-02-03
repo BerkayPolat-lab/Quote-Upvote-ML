@@ -12,6 +12,7 @@
     "expo": "^52.0.25",
     "firebase": "^11.2.0",
     "firebase-admin": "^13.0.2",
+    "react-native-svg": "^15.11.1",
     "react-native-vector-icons": "^10.2.0"
   },
   "devDependencies": {
