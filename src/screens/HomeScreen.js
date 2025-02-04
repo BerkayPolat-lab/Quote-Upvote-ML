@@ -48,7 +48,7 @@ const HomeScreen = ({ navigation }) => {
       const fetchSimilarQuote = async () => {
         try {
           // Send the currentQuoteIndex to the backend
-          const response = await fetch("https://127.0.0.1:5000/similar-quote", {
+          const response = await fetch("http://127.0.0.1:5000/similar-quote", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ likedQuoteIndex: currentQuoteIndex }),
