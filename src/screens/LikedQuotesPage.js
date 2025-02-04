@@ -67,6 +67,7 @@ const LikedQuotesPage = ({ navigation }) => {
                         <View key={quote.id} style={styles.quoteContainer}>
                             <Text style={styles.quoteText}>"{quote.quote}"</Text>
                             <Text style={styles.author}>- {quote.author}</Text>
+                            <Text style={styles.likes}>Likes: {quote.likes}</Text>
                         </View>
                     ))
             )}
@@ -130,6 +131,13 @@ const styles = StyleSheet.create({
         textAlign: "center",
         marginTop: 5,
         color: "gray",
+    },
+    likes: {
+        fontSize: 16,
+        fontWeight: "bold",
+        textAlign: "center",
+        marginTop: 5,
+        color: "black",
     },
 });
 

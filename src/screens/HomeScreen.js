@@ -3,7 +3,7 @@ import { ScrollView, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import { fetchQuotes } from '../../firebase/fetchQuotes'; // Import the fetch function
 import HeartButton from '../components/heartButton';
-import {collection, addDoc, Timestamp} from "firebase/firestore";
+import {collection, addDoc, Timestamp, updateDoc} from "firebase/firestore";
 import { db } from '../config/fireBaseConfig';
 
 
@@ -74,7 +74,7 @@ const HomeScreen = ({ navigation }) => {
   // Change quote every 30 seconds
   useEffect(() => {
     if (quotes.length > 0) {
-      const interval = setInterval(() => pickRandomQuote(quotes), 10000);
+      const interval = setInterval(() => pickRandomQuote(quotes), 15000);
 
       return () => clearInterval(interval); // Cleanup on unmount
     }
@@ -82,13 +82,6 @@ const HomeScreen = ({ navigation }) => {
 
   // Function to handle liking a quote
   const handleLike = async () => {
-    if (currentQuote.likes === 1) {
-      setCurrentQuote((prevQuote) => ({
-        ...prevQuote,
-        likes: 1, 
-      }));
-    }
-    
     if (currentQuote.likes === 0) {
       setCurrentQuote((prevQuote) => ({
         ...prevQuote,
@@ -101,6 +94,7 @@ const HomeScreen = ({ navigation }) => {
           ...currentQuote,
           userId: user.uid,
           Timestamp: Timestamp.now(),
+          likes: currentQuote.likes + 1,
         });
       } catch (err) {
         setError(err.message);
@@ -141,7 +135,6 @@ const HomeScreen = ({ navigation }) => {
       {/* Display the number of likes */}
       <Text style={styles.likes}>Likes: {currentQuote.likes}</Text>
 
-      {/* Heart Button */}
       <HeartButton onPress={handleLike} />
 
       {/* Logout Button */}
