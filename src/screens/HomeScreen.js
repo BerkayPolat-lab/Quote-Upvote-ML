@@ -71,10 +71,10 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
-  // Change quote every 30 seconds
+  // Change quote every 20 seconds
   useEffect(() => {
     if (quotes.length > 0) {
-      const interval = setInterval(() => pickRandomQuote(quotes), 15000);
+      const interval = setInterval(() => pickRandomQuote(quotes), 20000);
 
       return () => clearInterval(interval); // Cleanup on unmount
     }
