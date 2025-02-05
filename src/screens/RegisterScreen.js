@@ -18,7 +18,8 @@ import Icon from "react-native-vector-icons/Feather"; // Import Feather icons
 
 const RegisterScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
-  const [password, setPassword, confirmPassword, setConfirmPassword] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("")
   const [error, setError] = useState(null);
 
   const handleRegister = async () => {
@@ -44,7 +45,7 @@ const RegisterScreen = ({ navigation }) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#FFF" }}>
       <KeyboardAvoidingView 
         behavior={Platform.OS === "ios" ? "padding" : "height"} 
         style={{ flex: 1 }}

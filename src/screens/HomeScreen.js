@@ -95,9 +95,7 @@ const HomeScreen = ({ navigation }) => {
       }));
   
       setLikedQuotes([...likedQuotes, currentQuote]);
-  
-      console.log("Liked quote ID:", currentQuote.id);
-  
+    
       try {
         // Add to "liked-quotes" collection
         await addDoc(collection(db, "liked-quotes"), {
@@ -113,9 +111,7 @@ const HomeScreen = ({ navigation }) => {
           likes: currentQuote.likes + 1, // Just update the likes field
         });
   
-        console.log(`Updated quote ${currentQuote.id} likes in Firestore.`);
       } catch (err) {
-        console.error("Error updating likes:", err);
         setError(err.message);
       }
     }
