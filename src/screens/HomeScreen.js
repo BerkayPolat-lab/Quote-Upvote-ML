@@ -86,34 +86,36 @@ const HomeScreen = ({ navigation }) => {
       console.error("Quote ID is missing.");
       return;
     }
-  
-    if (currentQuote.likes === 0) {
-      // Update local state immediately for better UX
+
+    // Check if the user has already liked the quote
+    if (likedQuotes.some((quote) => quote.id === currentQuote.id)) {
+      return;
+    }
+
+    try {
       setCurrentQuote((prevQuote) => ({
         ...prevQuote,
         likes: prevQuote.likes + 1, // Increment likes count
       }));
-  
+
       setLikedQuotes([...likedQuotes, currentQuote]);
-    
-      try {
-        // Add to "liked-quotes" collection
-        await addDoc(collection(db, "liked-quotes"), {
-          ...currentQuote,
-          userId: user.uid,
-          Timestamp: Timestamp.now(),
-          likes: currentQuote.likes + 1,
-        });
-  
-        // Correct way to update Firestore: Get a document reference
-        const quoteRef = doc(db, "quotes", currentQuote.id);
-        await updateDoc(quoteRef, {
-          likes: currentQuote.likes + 1, // Just update the likes field
-        });
-  
-      } catch (err) {
-        setError(err.message);
-      }
+
+      // Add to "liked-quotes" collection
+      await addDoc(collection(db, "liked-quotes"), {
+        ...currentQuote,
+        userId: user.uid,
+        Timestamp: Timestamp.now(),
+        likes: currentQuote.likes + 1,
+      });
+
+      // Correct way to update Firestore: Get a document reference
+      const quoteRef = doc(db, "quotes", currentQuote.id);
+      await updateDoc(quoteRef, {
+        likes: currentQuote.likes + 1, // Just update the likes field
+      });
+
+    } catch (err) {
+      setError(err.message);
     }
   };
 
